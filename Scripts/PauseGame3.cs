@@ -1,71 +1,69 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
-public class PauseApp : MonoBehaviour
+
+public class PauseGame3 : MonoBehaviour
 {
-    public bool gamePaused = false;
-    public GameObject pauseMenu;
+	bool gamePaused = false;
     public GameObject player;
     public GameObject pausePos;
-    public float speed = 1;
-
     bool flag = false;
+
+    AudioSource audio;
+    public AudioClip SoundToPlay;
+    public AudioMixer mixer;
+
     Vector3 currentPos;
  
-    
-    
+    // Start is called before the first frame update
+    void Start()
+    {
+    	audio = GetComponent<AudioSource>();
+        audio.PlayOneShot(SoundToPlay, 1);
+        audio.pitch = 1;
+        mixer.SetFloat("SpeedParam", 1);
+    }
+
+    // Update is called once per frame
     void Update()
     {
-        //if(completeLevelUI.active == true){
         if(!flag){
         if (Input.GetKeyDown(KeyCode.Mouse0)){
-        	//if(gamePaused == false){
+        	if(gamePaused == false){
                 Time.timeScale = 0;
                 gamePaused = true;
                 Cursor.visible = true;
-                pauseMenu.SetActive(true);
                 currentPos = player.transform.localPosition;
                 player.transform.localPosition = pausePos.transform.localPosition;
-                Debug.Log("Updatein");
+                audio.Pause();
                 flag = true;
-            //}
+            }
+            Debug.Log("Update");
+            /*else{
+                pauseMenu.SetActive(false);
+                Cursor.visible = false;
+                gamePaused = false;
+                Time.timeScale = 2;
+                player.transform.localPosition = currentPos;
+            }*/
         }
     }
     }
 
     public void UnpauseGame(){
-        pauseMenu.SetActive(false);
         Cursor.visible = false;
         gamePaused = false;
-        Time.timeScale = speed;
+        Time.timeScale = 1;
         player.transform.localPosition = currentPos;
-        Invoke("setFlag",1);
+        audio.UnPause();
+        Invoke("SetFlag",1);
+        Debug.Log("unpause");
     }
 
-    public void SetSpeed1(){
-    	Debug.Log("set1");
-        speed = 1;
-        UnpauseGame();
-    }
-    public void SetSpeed2(){
-    	Debug.Log("set2");
-        speed = 1.5f;
-        UnpauseGame();
-    }
-    public void SetSpeed3(){
-    	Debug.Log("set3");
-        speed = 2;
-        UnpauseGame();
-    }
 
-    public void Restart(){
-    	SceneManager.LoadScene("01");
-    	UnpauseGame();
-    }
     public void Quit(){
-    	 //Application.Quit();
     	 Debug.Log("quit");
     	#if UNITY_EDITOR
          	UnityEditor.EditorApplication.isPlaying = false;
@@ -74,7 +72,7 @@ public class PauseApp : MonoBehaviour
      	#endif
     }
 
-    void setFlag(){
+    void SetFlag(){
         flag = false;
     }
 }
